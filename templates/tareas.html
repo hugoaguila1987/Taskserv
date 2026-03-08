@@ -2,37 +2,61 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Tareas - Gestor IA</title>
+    <title>Tareas - Taskserv</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #e9ecef; padding: 40px; }
         .contenedor { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
         h1 { color: #2c3e50; }
         .boton-volver { display: inline-block; margin-bottom: 20px; background: #95a5a6; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; }
         
-        /* Estilos para la lista de tareas */
-        .caja-tarea { background: #f8f9fa; border-left: 5px solid #e74c3c; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+        /* Estilos de la caja de nueva tarea */
+        .caja-nueva { background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        
+        /* Estilos para la lista de tareas y los botones nuevos */
+        .caja-tarea { background: #f8f9fa; border-left: 5px solid #e74c3c; padding: 15px; margin-bottom: 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
         .caja-tarea strong { color: #333; font-size: 18px; display: block; }
         .etiqueta { background: #f39c12; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .etiqueta-completada { background: #27ae60; color: white; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        
+        /* Botones de acción */
+        .btn-accion { padding: 8px 12px; text-decoration: none; color: white; border-radius: 4px; font-size: 14px; margin-left: 5px; font-weight: bold; }
+        .btn-check { background-color: #3498db; }
+        .btn-borrar { background-color: #c0392b; }
     </style>
 </head>
 <body>
     <div class="contenedor">
         <a href="/" class="boton-volver">⬅ Volver al Panel</a>
         <h1>📋 Lista de Tareas Pendientes</h1>
-        <div style="background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        
+        <div class="caja-nueva">
             <form action="/agregar_tarea" method="POST" style="display: flex; gap: 10px;">
                 <input type="text" name="descripcion" placeholder="Escribe una nueva tarea..." required style="flex: 1; padding: 10px; border: 1px solid #bdc3c7; border-radius: 4px;">
                 <button type="submit" style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">➕ Agregar</button>
             </form>
         </div>
-        
+
         {% for tarea in tareas_html %}
-            <div class="caja-tarea">
-                <strong>Tarea #{{ tarea.id }}: {{ tarea.descripcion }}</strong>
-                <br>
-                <span class="etiqueta">{{ tarea.estado }}</span>
+            <!-- Cambiamos el color del borde si la tarea está completada -->
+            <div class="caja-tarea" style="border-left-color: {% if tarea.estado == 'Completada' %}#27ae60{% else %}#e74c3c{% endif %};">
+                
+                <div style="flex-grow: 1;">
+                    <strong>Tarea #{{ tarea.id }}: {{ tarea.descripcion }}</strong>
+                    <br>
+                    <!-- Cambiamos el color de la etiqueta si está completada -->
+                    <span class="{% if tarea.estado == 'Completada' %}etiqueta-completada{% else %}etiqueta{% endif %}">{{ tarea.estado }}</span>
+                </div>
+                
+                <!-- Aquí están los nuevos botones -->
+                <div>
+                    {% if tarea.estado != 'Completada' %}
+                        <a href="/completar_tarea/{{ tarea.id }}" class="btn-accion btn-check">✔ Completar</a>
+                    {% endif %}
+                    <a href="/eliminar_tarea/{{ tarea.id }}" class="btn-accion btn-borrar">🗑 Borrar</a>
+                </div>
+
             </div>
         {% endfor %}
-        </div>
+    </div>
 </body>
 </html>

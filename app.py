@@ -51,6 +51,23 @@ def agregar_tarea():
     conexion.close()
     
     return redirect('/tareas')
+@app.route('/eliminar_tarea/<int:id>')
+def eliminar_tarea(id):
+    conexion = obtener_conexion()
+    # Le decimos a SQLite que borre la tarea que tenga este ID exacto
+    conexion.execute('DELETE FROM tareas WHERE id = ?', (id,))
+    conexion.commit()
+    conexion.close()
+    return redirect('/tareas')
+
+@app.route('/completar_tarea/<int:id>')
+def completar_tarea(id):
+    conexion = obtener_conexion()
+    # Le decimos a SQLite que actualice el estado a "Completada"
+    conexion.execute("UPDATE tareas SET estado = 'Completada' WHERE id = ?", (id,))
+    conexion.commit()
+    conexion.close()
+    return redirect('/tareas')
 
 if __name__ == '__main__':
     app.run(debug=True)
